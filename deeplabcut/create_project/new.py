@@ -24,6 +24,11 @@ def create_new_project(
     copy_videos=False,
     videotype="",
     multianimal=False,
+    bodyparts=["bodypart1", "bodypart2", "bodypart3", "objectA"],
+    skeleton=[["bodypart1", "bodypart2"], ["objectA", "bodypart3"]],
+    return_configpath_always=False,
+    numframes2pick=20,
+    append_suffix_to_videos=None
 ):
     r"""Create the necessary folders and files for a new project.
 
@@ -126,7 +131,10 @@ def create_new_project(
     # Create project and sub-directories
     if not DEBUG and project_path.exists():
         print('Project "{}" already exists!'.format(project_path))
-        return  os.path.join(str(project_path), "config.yaml")
+        if return_configpath_always:
+            return  os.path.join(str(project_path), "config.yaml")
+        else:
+            return
     video_path = project_path / "videos"
     data_path = project_path / "labeled-data"
     shuffles_path = project_path / "training-datasets"
@@ -171,7 +179,19 @@ def create_new_project(
         """
         p.mkdir(parents=True, exist_ok=True)
 
-    destinations = [video_path.joinpath(vp.name) for vp in videos]
+    assert append_suffix_to_videos is None, "this bad, since there will still be record of old filename, e.,g in extract lables."
+    if append_suffix_to_videos is None:
+        destinations = [video_path.joinpath(vp.name) for vp in videos]
+    elif isinstance(append_suffix_to_videos, list):
+        # same length as videos
+        assert len(append_suffix_to_videos)==len(videos)
+        for s in append_suffix_to_videos:
+            assert isinstance(s, str)
+        destinations = [video_path.joinpath(suff + "-" + vp.name) for suff, vp in zip(append_suffix_to_videos, videos)]
+    elif isinstance(append_suffix_to_videos, str):
+        # append same thing to all videos
+        destinations = [video_path.joinpath(append_suffix_to_videos + "-" + vp.name) for vp in videos]
+
     if copy_videos:
         print("Copying the videos")
         for src, dst in zip(videos, destinations):
@@ -252,8 +272,8 @@ def create_new_project(
     else:
         cfg_file, ruamelFile = auxiliaryfunctions.create_config_template()
         cfg_file["multianimalproject"] = False
-        cfg_file["bodyparts"] = ["bodypart1", "bodypart2", "bodypart3", "objectA"]
-        cfg_file["skeleton"] = [["bodypart1", "bodypart2"], ["objectA", "bodypart3"]]
+        cfg_file["bodyparts"] = bodyparts
+        cfg_file["skeleton"] = skeleton
         cfg_file["default_augmenter"] = "default"
         cfg_file["default_net_type"] = "resnet_50"
 
@@ -266,7 +286,8 @@ def create_new_project(
     cfg_file["cropping"] = False
     cfg_file["start"] = 0
     cfg_file["stop"] = 1
-    cfg_file["numframes2pick"] = 20
+    cfg_file["numframes2pick"] = numframes2pick
+    # cfg_file["numframes2pick"] = 20
     cfg_file["TrainingFraction"] = [0.95]
     cfg_file["iteration"] = 0
     cfg_file["snapshotindex"] = -1
