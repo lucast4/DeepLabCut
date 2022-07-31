@@ -148,6 +148,7 @@ def train(
     max_to_keep=5,
     keepdeconvweights=True,
     allow_growth=True,
+    checkpoint = None    
 ):
     start_path = os.getcwd()
     os.chdir(
@@ -156,6 +157,10 @@ def train(
     setup_logging()
 
     cfg = load_config(config_yaml)
+
+    if checkpoint:
+        cfg["init_weights"] = checkpoint
+
     net_type = cfg["net_type"]
     if cfg["dataset_type"] in ("scalecrop", "tensorpack", "deterministic"):
         print(

@@ -323,10 +323,18 @@ class VideoWriter(VideoReader):
         dest_folder=None,
     ):
         output_path = self.make_output_path(suffix, dest_folder)
+        # command = (
+        #     f"ffmpeg -n -i {self.video_path} -filter:v "
+        #     f"scale={width}:{height} {{}}-c:a copy {output_path}"
+        # ) # original version. didnt work well for the spinview avi files.
         command = (
             f"ffmpeg -n -i {self.video_path} -filter:v "
-            f'"scale={width}:{height}{{}}" -c:a copy {output_path}'
-        )
+            f"scale={width}:{height} -c:v h264 -crf 21 {{}}-c:a copy {output_path}"
+        ) # 
+        # command = f"ffmpeg -n -i {self.video_path} -filter:v scale={width}:{height} -c:v h264 -crf 21 -c:a copy {output_path}" # works well.
+        # command = f"ffmpeg -i {self.video_path} -filter:v scale={width}:{height} -c:v copy -crf 18 -c:a copy {output_path}" # doesnt work, since combine filtering and copying
+        # command = f"ffmpeg -i {self.video_path} -filter:v scale={width}:{height} -c:v copy -crf 18 -an {output_path}" # fails  since combine filtering and copying
+
         # Rotate, see: https://stackoverflow.com/questions/3937387/rotating-videos-with-ffmpeg
         # interesting option to just update metadata.
         if rotatecw == "Arbitrary":

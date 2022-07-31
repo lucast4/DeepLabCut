@@ -61,6 +61,7 @@ def train_network(
     autotune=False,
     keepdeconvweights=True,
     modelprefix="",
+    checkpoint = None    
 ):
     """Trains the network with the labels in the training dataset.
 
@@ -124,6 +125,9 @@ def train_network(
     modelprefix: str, optional, default=""
         Directory containing the deeplabcut models to use when evaluating the network.
         By default, the models are assumed to exist in the project folder.
+
+    checkpoint: str, path to checkpoint file. Continues training from there.
+
 
     Returns
     -------
@@ -202,6 +206,7 @@ def train_network(
                 max_to_keep=max_snapshots_to_keep,
                 keepdeconvweights=keepdeconvweights,
                 allow_growth=allow_growth,
+                checkpoint = checkpoint
             )  # pass on path and file name for pose_cfg.yaml!
         else:
             from deeplabcut.pose_estimation_tensorflow.core.train import train
@@ -215,6 +220,7 @@ def train_network(
                 max_to_keep=max_snapshots_to_keep,
                 keepdeconvweights=keepdeconvweights,
                 allow_growth=allow_growth,
+                checkpoint = checkpoint
             )  # pass on path and file name for pose_cfg.yaml!
 
     except BaseException as e:

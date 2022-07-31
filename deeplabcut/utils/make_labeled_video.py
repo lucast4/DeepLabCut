@@ -1055,6 +1055,7 @@ def _create_video_from_tracks(video, tracks, destfolder, output_name, pcutoff, s
 
     outputframerate = 30
     os.chdir(destfolder)
+    print("** DLC fps", vid.fps)
 
     subprocess.call(
         [

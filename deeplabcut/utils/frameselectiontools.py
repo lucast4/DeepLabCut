@@ -77,6 +77,14 @@ def UniformFramescv2(cap, numframes2pick, start, stop, Index=None):
         " seconds.",
     )
 
+    # expected num frames in vidoe
+    nframes2 = np.floor(math.ceil(nframes * stop)-math.floor(nframes * start) - 1)
+    if nframes2<1:
+        nframes2=1
+    # if not enough frames exist, then take all.
+    if numframes2pick > nframes2:
+        numframes2pick = nframes2
+
     if Index is None:
         if start == 0:
             frames2pick = np.random.choice(

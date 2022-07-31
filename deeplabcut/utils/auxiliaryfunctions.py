@@ -300,7 +300,7 @@ def attempttomakefolder(foldername, recursive=False):
         )  # https://github.com/DeepLabCut/DeepLabCut/issues/105 (windows)
 
     if os.path.isdir(foldername):
-        pass
+        print(foldername, " already exists! (attempttomakefolder)")
     else:
         if recursive:
             os.makedirs(foldername)

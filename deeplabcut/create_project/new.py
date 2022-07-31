@@ -191,6 +191,9 @@ def create_new_project(
     elif isinstance(append_suffix_to_videos, str):
         # append same thing to all videos
         destinations = [video_path.joinpath(append_suffix_to_videos + "-" + vp.name) for vp in videos]
+    else:
+        print(append_suffix_to_videos)
+        assert False, "fix this"
 
     if copy_videos:
         print("Copying the videos")
