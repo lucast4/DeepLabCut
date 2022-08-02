@@ -321,8 +321,16 @@ class VideoWriter(VideoReader):
         angle=0.0,
         suffix="rescale",
         dest_folder=None,
+        overwrite=True
     ):
         output_path = self.make_output_path(suffix, dest_folder)
+
+        import os
+        if os.path.exists(output_path) and overwrite==False:
+            # just return the path
+            print("[rescale] skipping video since already done: ", output_path)
+            return output_path
+
         # command = (
         #     f"ffmpeg -n -i {self.video_path} -filter:v "
         #     f"scale={width}:{height} {{}}-c:a copy {output_path}"
@@ -345,6 +353,7 @@ class VideoWriter(VideoReader):
         else:
             command = command.format("")
         subprocess.call(command, shell=True)
+
         return output_path
 
     @staticmethod
@@ -508,6 +517,7 @@ def DownSampleVideo(
     outpath=None,
     rotatecw="No",
     angle=0.0,
+    overwrite=True
 ):
     """
     Auxiliary function to downsample a video and output it to the same folder with "outsuffix" appended in its name.
@@ -553,7 +563,7 @@ def DownSampleVideo(
     Downsamples the video to a width of 220 and height of 320 and saves it in C:\\yourusername\\rig-95\\Videos as reachingvideo1cropped.avi
     """
     writer = VideoWriter(vname)
-    return writer.rescale(width, height, rotatecw, angle, outsuffix, outpath)
+    return writer.rescale(width, height, rotatecw, angle, outsuffix, outpath, overwrite=overwrite)
 
 
 def draw_bbox(video):
